@@ -1,7 +1,5 @@
 package com.Ironhack.MidTermProject.Security;
 
-import com.Ironhack.MidTermProject.Services.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,8 +14,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -35,15 +31,17 @@ public class SecurityConfiguration {
         http.httpBasic();
 
         http.authorizeRequests()
+                .mvcMatchers(HttpMethod.GET, "/admin/add_account_holder/").hasRole("ADMIN")
                 .mvcMatchers(HttpMethod.GET, "/account_holder/**").hasRole("ACCOUNTHOLDER")
                 .mvcMatchers(HttpMethod.POST, "/account_holder/**").hasRole("ACCOUNTHOLDER")
                 .mvcMatchers(HttpMethod.GET, "/third_party/**").hasAnyRole("THIRDPARTY")
                 .mvcMatchers(HttpMethod.POST, "/third_party/**").hasRole("THIRDPARTY")
-     //           .mvcMatchers(HttpMethod.GET, "/admin/**").hasRole("ADMIN")
-       //         .mvcMatchers(HttpMethod.POST, "/admin/**").hasRole("ADMIN")
-                .mvcMatchers(HttpMethod.GET, "/admin/add_account_holder/").permitAll()
+                .mvcMatchers(HttpMethod.GET, "/admin/**").hasRole("ADMIN")
+                .mvcMatchers(HttpMethod.POST, "/admin/**").hasRole("ADMIN")
                 .mvcMatchers(HttpMethod.PATCH, "/admin/**").hasRole("ADMIN")
                 .anyRequest().permitAll();
+                /*
+                 */
 
         http.csrf().disable();
         return http.build();

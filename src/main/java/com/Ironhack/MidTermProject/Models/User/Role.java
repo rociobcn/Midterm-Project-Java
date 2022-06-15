@@ -1,7 +1,7 @@
 package com.Ironhack.MidTermProject.Models.User;
 
+
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "roles")
@@ -9,9 +9,7 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull(message = "Name of the role cannot be empty")
     private String role;
-    @NotNull(message = "user_id cannot be empty")
     @ManyToOne
     private User user;
 
@@ -46,5 +44,4 @@ public class Role {
     public void setUser(User user) {
         this.user = user;
     }
-
 }

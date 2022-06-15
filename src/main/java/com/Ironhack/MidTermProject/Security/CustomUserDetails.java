@@ -10,17 +10,22 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class CustomUserDetails implements UserDetails {
+
     private User user;
 
     public CustomUserDetails(User user) {
         this.user = user;
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+
         Collection<GrantedAuthority> authorities = new HashSet<>();
+
         for(Role role : user.getRoles()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
         }
+
         return authorities;
     }
 
@@ -36,21 +41,21 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

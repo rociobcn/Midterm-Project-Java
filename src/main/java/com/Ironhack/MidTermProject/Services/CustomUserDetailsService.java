@@ -11,14 +11,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+
     @Autowired
     private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByUsername(username);
+        Optional<User> user = userRepository.findById(username);
         if (!user.isPresent()) {
             System.out.println("User not present!");
             throw new UsernameNotFoundException("User does not exist");
@@ -28,7 +30,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         System.out.println(customUserDetails.getAuthorities());
         System.out.println(customUserDetails.getUsername());
 
-
         return customUserDetails;
     }
 }
+
+

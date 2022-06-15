@@ -1,5 +1,6 @@
 package com.Ironhack.MidTermProject.Models.User;
 
+import com.Ironhack.MidTermProject.Models.User.User;
 import com.Ironhack.MidTermProject.Embeddables.Address;
 import com.Ironhack.MidTermProject.Models.Account.Account;
 import com.fasterxml.jackson.annotation.JsonFormat;
