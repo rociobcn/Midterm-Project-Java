@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
 public class AccountHolder extends User{
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "dd-MM-yyyy")
+    @NotNull(message = "The date cannot be empty")
     private Date birth;
     @Embedded
     @AttributeOverrides({
@@ -22,6 +24,7 @@ public class AccountHolder extends User{
             @AttributeOverride(name = "country", column = @Column(name = "country_primaryAddress")),
             @AttributeOverride(name = "postalCode", column = @Column(name = "postalCode_primaryAddress")),
     })
+    @NotNull(message = "The address primary cannot be empty")
     private Address primaryAddress;
     @Embedded
     @AttributeOverrides({
@@ -30,6 +33,7 @@ public class AccountHolder extends User{
             @AttributeOverride(name = "country", column = @Column(name = "country_mailingAddress")),
             @AttributeOverride(name = "postalCode", column = @Column(name = "postalCode_mailingAddress")),
     })
+    @NotNull(message = "The address mailing cannot be empty")
     private Address mailingAddress;
     @OneToMany(mappedBy = "primaryOwner")
     @JsonIgnore

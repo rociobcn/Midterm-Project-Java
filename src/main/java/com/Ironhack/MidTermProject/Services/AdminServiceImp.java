@@ -1,6 +1,7 @@
 package com.Ironhack.MidTermProject.Services;
 
 import com.Ironhack.MidTermProject.Models.User.AccountHolder;
+import com.Ironhack.MidTermProject.Models.User.ThirdParty;
 import com.Ironhack.MidTermProject.Repositories.AccountHolderRepository;
 import com.Ironhack.MidTermProject.Repositories.AdminRepository;
 import com.Ironhack.MidTermProject.Repositories.ThirdPartyRepository;
@@ -33,6 +34,15 @@ public class AdminServiceImp implements AdminService {
             return accountHolderRepository.save(accountHolder1);
         } else {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "The Account Holder already exists");
+        }
+    }
+    public ThirdParty addThirdParty(ThirdParty thirdParty) {
+        if (!thirdPartyRepository.findByUsername(thirdParty.getUsername()).isPresent()) {
+            ThirdParty thirdParty1 = new ThirdParty(thirdParty.getUsername(), passwordEncoder.encode((thirdParty.getPassword())),
+                    thirdParty.getFullName(), thirdParty.getHashedKey());
+            return thirdPartyRepository.save(thirdParty1);
+        } else {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "The Third Party already exists");
         }
     }
 }
