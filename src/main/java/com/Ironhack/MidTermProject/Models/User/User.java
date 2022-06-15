@@ -1,22 +1,23 @@
 package com.Ironhack.MidTermProject.Models.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.Hibernate;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-public class User {
+@Table(name = "users")
+public class User  {
+    //El id puede ser el username porque en todo caso el username siempre será único
     @Id
-    @Column(unique = true)
     private String username;
-    @NotNull(message = "The password cannot be empty")
     private String password;
-    @NotNull(message = "The full name cannot be empty")
     private String fullName;
+
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
     private Set<Role> roles = new HashSet<>();
@@ -24,9 +25,18 @@ public class User {
     public User() {
     }
 
-    public User(String username, String password, String fullName) {
+    public User( String username, String password, String fullName) {
         this.username = username;
         this.password = password;
+        this.fullName = fullName;
+
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
         this.fullName = fullName;
     }
 
@@ -46,14 +56,6 @@ public class User {
         this.password = password;
     }
 
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
     public Set<Role> getRoles() {
         return roles;
     }
@@ -61,6 +63,7 @@ public class User {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
     public void setRole(String role) {
         roles.add(new Role(role, this));
     }
