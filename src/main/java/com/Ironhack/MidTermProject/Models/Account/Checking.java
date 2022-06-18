@@ -7,8 +7,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -20,6 +23,7 @@ public class Checking extends Account{
             @AttributeOverride(name = "currency", column = @Column(name = "minimumBalanceCheckingCurrency")),
             @AttributeOverride(name = "amount", column = @Column(name = "minimumBalanceCheckingAmount"))
     })
+
     private Money minimumBalance;
     @Embedded
     @AttributeOverrides({
@@ -28,33 +32,24 @@ public class Checking extends Account{
             @AttributeOverride(name = "currency", column = @Column(name = "monthlyMaintenanceFeeCurrency")),
             @AttributeOverride(name = "amount", column = @Column(name = "monthlyMaintenanceFeeAmount"))
     })
+
     private Money monthlyMaintenanceFee;
-    @NotNull(message = "The secret key cannot be empty")
-    private String secretKey;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "dd-MM-yyyy")
-    @NotNull(message = "The date cannot be empty")
-
-    private Date createDate;
-    @NotNull(message = "The status cannot be empty")
-    @Enumerated(EnumType.STRING)
-    private Status status;
-
-    public Checking(String secretKey, Date createDate, Status status) {
+    private LocalDate createDate;
+    public Checking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, Status status) {
+        super(balance, primaryOwner, secondaryOwner, secretKey, status);
         this.minimumBalance = new Money(new BigDecimal(250));
         this.monthlyMaintenanceFee = new Money(new BigDecimal(12));
-        this.secretKey = secretKey;
-        this.createDate = createDate;
-        this.status = status;
+        this.createDate = LocalDate.now();
+
     }
-
-    public Checking(long id, Money balance, AccountHolder primaryOwner, AccountHolder secundaryOwner, String secretKey, Date createDate, Status status) {
-        super(id, balance, primaryOwner, secundaryOwner);
+    public Checking(Money balance, AccountHolder primaryOwner, String secretKey, Status status) {
+        super(balance, primaryOwner, secretKey, status);
         this.minimumBalance = new Money(new BigDecimal(250));
         this.monthlyMaintenanceFee = new Money(new BigDecimal(12));
-        this.secretKey = secretKey;
-        this.createDate = createDate;
-        this.status = status;
+        this.createDate = LocalDate.now();
     }
 
     public Checking() {
@@ -78,33 +73,18 @@ public class Checking extends Account{
         this.monthlyMaintenanceFee = monthlyMaintenanceFee;
     }
 
-    public String getSecretKey() {
-        return secretKey;
-    }
-
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
-
-    public Date getCreateDate() {
+    public LocalDate getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDate createDate) {
         this.createDate = createDate;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 
     public void penaltyBalance(){
-        if(getBalance().getAmount().compareTo(getMinimumBalance().getAmount())== -1){
-            setBalance(new Money(getBalance().getAmount().subtract(getPenaltyFee().getAmount())));
+        if(super.getBalance().getAmount().compareTo(getMinimumBalance().getAmount())== -1){
+            super.setBalance(new Money(super.getBalance().getAmount().subtract(getPenaltyFee().getAmount())));
         }
     }
 
@@ -116,7 +96,8 @@ public class Checking extends Account{
 
     @Override
     public void setBalance(Money balance) {
-        penaltyBalance();
+
         super.setBalance(balance);
+        penaltyBalance();
     }
 }

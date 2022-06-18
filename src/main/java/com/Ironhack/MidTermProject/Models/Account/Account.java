@@ -1,11 +1,13 @@
 package com.Ironhack.MidTermProject.Models.Account;
 
 import com.Ironhack.MidTermProject.Embeddables.Money;
+import com.Ironhack.MidTermProject.Enums.Status;
 import com.Ironhack.MidTermProject.Models.User.AccountHolder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -20,15 +22,16 @@ public class Account {
             @AttributeOverride(name = "currency", column = @Column(name = "balanceCurrency")),
             @AttributeOverride(name = "amount", column = @Column(name = "balanceAmount"))
     })
-    @NotNull(message = "The balance cannot be empty")
     private Money balance;
+
     @ManyToOne
     @JoinColumn(name = "primary_owner_username")
-    @NotNull(message = "The primary owner cannot be empty")
+
     private AccountHolder primaryOwner;
     @ManyToOne
-    @JoinColumn(name = "secundary_owner_username")
-    private AccountHolder secundaryOwner;
+    @JoinColumn(name = "secondary_owner_username")
+   // @NotEmpty(message = "The secondary owner cannot be empty")
+    private AccountHolder secondaryOwner;
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "USD", column = @Column(name = "penaltyFeeUSD")),
@@ -38,15 +41,38 @@ public class Account {
     })
     private Money penaltyFee;
 
+    @OneToMany(mappedBy = "sendAccount")
+    @JsonIgnore
+    private List<Transfer> sendTransferList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiveAccount")
+    private List<Transfer> receiveTransferList;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "accountHolderAccount")
+    private List<TransferThirdParty> thirdPartyTransferList;
+    private String secretKey;
+    @Enumerated(EnumType.STRING)
+    private Status status;
+
     public Account() {
     }
 
-    public Account(long id, Money balance, AccountHolder primaryOwner, AccountHolder secundaryOwner) {
-        this.id = id;
+    public Account(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, Status status) {
         this.balance = balance;
         this.primaryOwner = primaryOwner;
-        this.secundaryOwner = secundaryOwner;
+        this.secondaryOwner = secondaryOwner;
         this.penaltyFee = new Money(new BigDecimal(40));
+        this.secretKey = secretKey;
+        this.status = status;
+    }
+    public Account(Money balance, AccountHolder primaryOwner, String secretKey, Status status) {
+        this.balance = balance;
+        this.primaryOwner = primaryOwner;
+        this.penaltyFee = new Money(new BigDecimal(40));
+        this.secretKey = secretKey;
+        this.status = status;
     }
 
     public long getId() {
@@ -73,12 +99,12 @@ public class Account {
         this.primaryOwner = primaryOwner;
     }
 
-    public AccountHolder getSecundaryOwner() {
-        return secundaryOwner;
+    public AccountHolder getSecondaryOwner() {
+        return secondaryOwner;
     }
 
-    public void setSecundaryOwner(AccountHolder secundaryOwner) {
-        this.secundaryOwner = secundaryOwner;
+    public void setSecondaryOwner(AccountHolder secondaryOwner) {
+        this.secondaryOwner = secondaryOwner;
     }
 
     public Money getPenaltyFee() {
@@ -88,4 +114,45 @@ public class Account {
     public void setPenaltyFee(Money penaltyFee) {
         this.penaltyFee = penaltyFee;
     }
+
+    public List<Transfer> getSendTransferList() {
+        return sendTransferList;
+    }
+
+    public void setSendTransferList(List<Transfer> sendTransferList) {
+        this.sendTransferList = sendTransferList;
+    }
+
+    public List<Transfer> getReceiveTransferList() {
+        return receiveTransferList;
+    }
+
+    public void setReceiveTransferList(List<Transfer> receiveTransferList) {
+        this.receiveTransferList = receiveTransferList;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public List<TransferThirdParty> getThirdPartyTransferList() {
+        return thirdPartyTransferList;
+    }
+
+    public void setThirdPartyTransferList(List<TransferThirdParty> thirdPartyTransferList) {
+        this.thirdPartyTransferList = thirdPartyTransferList;
+    }
+
 }

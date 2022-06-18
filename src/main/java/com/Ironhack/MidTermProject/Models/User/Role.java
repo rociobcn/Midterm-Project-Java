@@ -1,7 +1,10 @@
 package com.Ironhack.MidTermProject.Models.User;
 
 
+import com.sun.istack.NotNull;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "roles")
@@ -9,7 +12,10 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotEmpty(message = "The role cannot be empty")
     private String role;
+    //@NotEmpty(message = "The user cannot be empty")
     @ManyToOne
     private User user;
 

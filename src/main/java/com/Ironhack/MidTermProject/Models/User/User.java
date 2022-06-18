@@ -5,17 +5,22 @@ import org.hibernate.Hibernate;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User  {
-    //El id puede ser el username porque en todo caso el username siempre será único
     @Id
+    //@NotEmpty(message = "sdf")
     private String username;
+    //@NotEmpty(message = "The password cannot be empty")
     private String password;
+    //@NotEmpty(message = "The full name cannot be empty")
     private String fullName;
 
     @JsonIgnore
@@ -30,6 +35,11 @@ public class User  {
         this.password = password;
         this.fullName = fullName;
 
+    }
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public String getFullName() {

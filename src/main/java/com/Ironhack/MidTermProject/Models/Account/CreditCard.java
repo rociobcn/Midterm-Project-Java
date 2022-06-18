@@ -1,27 +1,25 @@
 package com.Ironhack.MidTermProject.Models.Account;
 
 import com.Ironhack.MidTermProject.Embeddables.Money;
+import com.Ironhack.MidTermProject.Enums.Status;
 import com.Ironhack.MidTermProject.Models.User.AccountHolder;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
+import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-
+@Entity
 public class CreditCard extends Account{
-    @DecimalMin(value="0.1")
+
     private BigDecimal interestRate;
-    @DecimalMax(value="100000")
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "USD", column = @Column(name = "creditLimitUSD")),
@@ -32,26 +30,27 @@ public class CreditCard extends Account{
     private Money creditLimit;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "dd-MM-yyyy")
-    @NotNull(message = "The date cannot be empty")
-    private Date createDate;
+    private LocalDate createDate;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "dd-MM-yyyy")
-    @NotNull(message = "The date cannot be empty")
-    private Date interestDate;
+    private LocalDate interestDate;
 
     public CreditCard() {
-        this.interestRate = new BigDecimal(0.0025);
-        this.creditLimit = new Money(new BigDecimal(100));
-        this.createDate = Date.from(Instant.now());
-        this.interestDate =Date.from(Instant.now());
     }
 
-    public CreditCard(long id, Money balance, AccountHolder primaryOwner, AccountHolder secundaryOwner) {
-        super(id, balance, primaryOwner, secundaryOwner);
-        this.interestRate = new BigDecimal(0.2);
-        this.creditLimit = new Money(new BigDecimal(100));
-        this.createDate = Date.from(Instant.now());
-        this.interestDate =Date.from(Instant.now());
+    public CreditCard(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, Status status, BigDecimal interestRate, Money creditLimit) {
+        super(balance, primaryOwner, secondaryOwner, secretKey, status);
+        this.interestRate = interestRate;
+        this.creditLimit = creditLimit;
+        this.createDate = LocalDate.now();
+        this.interestDate = LocalDate.now();
+    }
+    public CreditCard(Money balance, AccountHolder primaryOwner, String secretKey, Status status, BigDecimal interestRate, Money creditLimit) {
+        super(balance, primaryOwner,secretKey, status);
+        this.interestRate = interestRate;
+        this.creditLimit = creditLimit;
+        this.createDate = LocalDate.now();
+        this.interestDate = LocalDate.now();
     }
 
     public BigDecimal getInterestRate() {
@@ -68,29 +67,29 @@ public class CreditCard extends Account{
         this.creditLimit = creditLimit;
     }
 
-    public Date getCreateDate() {
+    public LocalDate getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDate createDate) {
         this.createDate = createDate;
     }
 
-    public Date getInterestDate() {
+    public LocalDate getInterestDate() {
         return interestDate;
     }
 
-    public void setInterestDate(Date interestDate) {
+    public void setInterestDate(LocalDate interestDate) {
         this.interestDate = interestDate;
     }
 
     public void addInterest(){
-        LocalDate interestDateParse = LocalDate.of(getInterestDate().getYear(), getInterestDate().getMonth(), getInterestDate().getDay());
-        Long differenceMonths = ChronoUnit.MONTHS.between(interestDateParse, LocalDate.now());
+
+        Long differenceMonths = ChronoUnit.MONTHS.between(interestDate, LocalDate.now());
         if(differenceMonths >=1){
-            BigDecimal interest = getBalance().getAmount().multiply(getInterestRate()).multiply(BigDecimal.valueOf(differenceMonths));
-            setBalance(new Money(getBalance().getAmount().add(interest)));
-            this.interestDate = Date.from(Instant.now());
+            BigDecimal interest = super.getBalance().getAmount().multiply(getInterestRate()).multiply(BigDecimal.valueOf(differenceMonths));
+            super.setBalance(new Money(super.getBalance().getAmount().add(interest)));
+            this.interestDate = LocalDate.now();
         }
     }
 
@@ -102,7 +101,8 @@ public class CreditCard extends Account{
 
     @Override
     public void setBalance(Money balance) {
-        addInterest();
         super.setBalance(balance);
+        addInterest();
+
     }
 }

@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ThirdPartyRepository extends JpaRepository<User, String> {
+public interface ThirdPartyRepository extends JpaRepository<ThirdParty, String> {
     Optional<ThirdParty> findByUsername(String name);
 }

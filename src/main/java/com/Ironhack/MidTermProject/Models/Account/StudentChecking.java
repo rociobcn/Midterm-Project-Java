@@ -6,59 +6,45 @@ import com.Ironhack.MidTermProject.Models.User.AccountHolder;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.Date;
-
+@Entity
 public class StudentChecking extends Account{
-    @NotNull(message = "The secret key cannot be empty")
-    private String secretKey;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "dd-MM-yyyy")
-    @NotNull(message = "The date cannot be empty")
-    private Date createDate;
-    @NotNull(message = "The status cannot be empty")
-    @Enumerated(EnumType.STRING)
-    private Status status;
 
-    public StudentChecking(String secretKey, Date createDate, Status status) {
-        this.secretKey = secretKey;
-        this.createDate = createDate;
-        this.status = status;
+    private LocalDate createDate;
+
+
+    public StudentChecking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, String secretKey, Status status) {
+        super(balance, primaryOwner, secondaryOwner,secretKey, status);
+        this.createDate = LocalDate.now();
+
     }
+    public StudentChecking(Money balance, AccountHolder primaryOwner, String secretKey, Status status) {
+        super(balance, primaryOwner, secretKey, status);
+        this.createDate = LocalDate.now();
 
-    public StudentChecking(long id, Money balance, AccountHolder primaryOwner, AccountHolder secundaryOwner, String secretKey, Date createDate, Status status) {
-        super(id, balance, primaryOwner, secundaryOwner);
-        this.secretKey = secretKey;
-        this.createDate = createDate;
-        this.status = status;
     }
-
     public StudentChecking() {
     }
 
-    public String getSecretKey() {
-        return secretKey;
-    }
 
-    public void setSecretKey(String secretKey) {
-        this.secretKey = secretKey;
-    }
-
-    public Date getCreateDate() {
+    public LocalDate getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDate createDate) {
         this.createDate = createDate;
     }
 
-    public Status getStatus() {
-        return status;
-    }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+
+
 }
