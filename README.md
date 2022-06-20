@@ -11,9 +11,6 @@ You must use the Money class for all currency and BigDecimal for any other decim
 A working REST API, built by you that runs on a local server.
 A simplified class diagram representing your project structure should be added to the repo.
 
----
----
----
 ## PROJECT:
 ![img.png](img.png)
 
@@ -30,7 +27,6 @@ All routes work fine, I have post, get and path routes.
 Also, I have a put route where any aspect of thirdParty can be changed, depending on the optional parameters that are passed.
 Many more routes can be created, but I have created the most significant ones.
 
----
 ## BONUS:
 ![img_3.png](img_3.png)
 
